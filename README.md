@@ -1,6 +1,13 @@
 # Oseram
 
-Oseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible. After a successful build, Oseram prints a random quote.
+Oseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible.
+
+## Install
+Install easily with go install:
+
+```
+go install github.com/andrehag/oseram/cmd/oseram
+```
 
 ## Build
 
@@ -16,7 +23,7 @@ go install ./cmd/oseram
 
 ## Run
 
-Run the single final/root task inferred from `build.yml`:
+Run the default task from `global.default`, or the single final/root task inferred from `build.yml`:
 
 ```sh
 ./oseram
@@ -68,4 +75,4 @@ Flags:
 
 Arguments:
 
-- `[task]`: optional task name. If omitted, Oseram runs the single final task that no other task depends on. If multiple final tasks exist, Oseram fails and asks for an explicit task.
+- `[task]`: optional task name. If omitted, Oseram runs `global.default` when set; otherwise it runs the single final task that no other task depends on. If multiple final tasks exist and no default is set, Oseram fails and asks for an explicit task.

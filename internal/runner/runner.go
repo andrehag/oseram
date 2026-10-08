@@ -9,9 +9,10 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"gopkg.in/yaml.v3"
 
-	"oseram/internal/actions"
-	"oseram/internal/config"
+	"github.com/andrehag/oseram/internal/actions"
+	"github.com/andrehag/oseram/internal/config"
 )
 
 type Runner struct {
@@ -35,6 +36,7 @@ var (
 	runningStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("33"))
 	successStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("42"))
 	failureStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
+	forceStyle   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("196"))
 	titleStyle   = lipgloss.NewStyle().Bold(true)
 	outputStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("244"))
 )
@@ -56,7 +58,7 @@ func (r Runner) Run(ctx context.Context, selected []string) error {
 	if r.DryRun {
 		fmt.Println("execution plan:")
 		for _, name := range selected {
-			fmt.Printf("- %s\n", name)
+			fmt.Printf("- %s %s\n", name, r.taskActionLabel(name))
 		}
 		return nil
 	}
@@ -183,9 +185,8 @@ func (m *model) View() string {
 		b.WriteString(m.statuses[name].icon())
 		b.WriteString(" ")
 		b.WriteString(name)
-		b.WriteString(" (")
-		b.WriteString(m.runner.Config.Tasks[name].ActionName)
-		b.WriteString(")")
+		b.WriteString(" ")
+		b.WriteString(m.runner.taskActionLabel(name))
 		b.WriteString("\n")
 	}
 	if len(m.output) > 0 {
@@ -215,6 +216,21 @@ func (m *model) runTaskCmd(name string) tea.Cmd {
 	return func() tea.Msg {
 		return m.runner.runTask(m.ctx, name)
 	}
+}
+
+func (r Runner) taskActionLabel(name string) string {
+	task := r.Config.Tasks[name]
+	if task.ActionName == "delete" && deleteIsForced(task.Action) {
+		return "(" + task.ActionName + " " + forceStyle.Render("FORCE") + ")"
+	}
+	return "(" + task.ActionName + ")"
+}
+
+func deleteIsForced(raw yaml.Node) bool {
+	var cfg struct {
+		Force bool `yaml:"force"`
+	}
+	return raw.Decode(&cfg) == nil && cfg.Force
 }
 
 func (m *model) appendOutput(res taskResult) {

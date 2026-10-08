@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"os"
 
-	"oseram/internal/actions"
-	"oseram/internal/config"
-	"oseram/internal/graph"
-	"oseram/internal/quotes"
-	"oseram/internal/runner"
+	"github.com/andrehag/oseram/internal/actions"
+	"github.com/andrehag/oseram/internal/config"
+	"github.com/andrehag/oseram/internal/graph"
+	"github.com/andrehag/oseram/internal/quotes"
+	"github.com/andrehag/oseram/internal/runner"
 )
 
 func main() {
@@ -42,6 +42,11 @@ func run() error {
 	if err := graph.Validate(cfg.Tasks); err != nil {
 		return err
 	}
+	if cfg.Global.Default != "" {
+		if _, ok := cfg.Tasks[cfg.Global.Default]; !ok {
+			return fmt.Errorf("global.default references unknown task %q", cfg.Global.Default)
+		}
+	}
 
 	if *list {
 		for _, name := range config.TaskNames(cfg.Tasks) {
@@ -56,13 +61,15 @@ func run() error {
 	}
 	if flag.NArg() == 1 {
 		target = flag.Arg(0)
+	} else if cfg.Global.Default != "" {
+		target = cfg.Global.Default
 	} else {
 		finals := graph.FinalTasks(cfg.Tasks)
 		if len(finals) == 0 {
 			return fmt.Errorf("no root/final task found")
 		}
 		if len(finals) > 1 {
-			return fmt.Errorf("multiple root/final tasks found (%v); specify a task", finals)
+			return fmt.Errorf("multiple root/final tasks found (%v); specify a task or set global.default", finals)
 		}
 		target = finals[0]
 	}
@@ -103,6 +110,8 @@ Flags:
   --help         Show this help text
 
 Arguments:
-  task           Optional task to run with its dependencies
+  task           Optional task to run with its dependencies. If omitted,
+                 global.default is used when set; otherwise the single final
+                 task is inferred.
 `)
 }

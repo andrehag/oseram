@@ -1,4 +1,4 @@
-module oseram
+module github.com/andrehag/oseram
 
 go 1.24.0
 

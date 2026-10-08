@@ -14,6 +14,7 @@ global:
   environment:
     CGO_ENABLED: "0"
   verbose: false
+  default: server
 
 frontend:
   workingDirectory: ./frontend
@@ -47,6 +48,7 @@ Parameters:
 - `workingDirectory`: default working directory for tasks.
 - `environment`: environment variables applied to every task.
 - `verbose`: when `true`, prints captured stdout/stderr for successful tasks too.
+- `default`: optional task to run when no task argument is provided.
 
 Task-level settings override global settings.
 
@@ -59,7 +61,7 @@ A task may contain:
 - `dependsOn`: a dependency or list of dependencies.
 - `workingDirectory`: task working directory.
 - `environment`: task-specific environment variables.
-- exactly one action: `go`, `npm`, `zip`, or `copy`.
+- exactly one action: `go`, `npm`, `zip`, `copy`, or `delete`.
 
 `dependsOn` may be either a string or a list:
 
@@ -79,7 +81,7 @@ package:
     output: dist/app.zip
 ```
 
-If no task is provided on the command line, Oseram runs the single final task: the task that no other task depends on. If there is more than one final task, Oseram exits with an error and asks for an explicit task.
+If no task is provided on the command line, Oseram runs `global.default` when it is set. Otherwise it runs the single final task: the task that no other task depends on. If there is more than one final task and no default is set, Oseram exits with an error and asks for an explicit task.
 
 Every selected task always runs. Oseram does not skip tasks based on timestamps or existing outputs.
 
@@ -146,6 +148,36 @@ npm install        # if install is true
 npm run <task>    # if task is set
 ```
 
+### `delete`
+
+Deletes files matching one or more doublestar-style glob patterns.
+
+```yaml
+clean:
+  delete:
+    patterns:
+      - "dist/**/*"
+```
+
+Parameters:
+
+- `patterns`: required list of doublestar-style glob patterns for files to delete.
+- `force`: optional boolean. Defaults to `false`.
+
+Safety guard:
+
+- Without `force`, each pattern may only match files inside a single top-level folder, or up to 10 root-level files.
+- Without `force`, Oseram aborts if one pattern matches multiple top-level folders, matches both root files and a top-level folder, or matches files outside the build root.
+- Use `force: true` to bypass this check. Forced delete tasks are highlighted in the task UI.
+
+```yaml
+cleanEverything:
+  delete:
+    force: true
+    patterns:
+      - "**/*"
+```
+
 ### `zip`
 
 Creates a zip archive. Existing output zip files are overwritten.
@@ -196,7 +228,7 @@ oseram [flags] [task]
 
 Arguments:
 
-- `[task]`: optional task name. If provided, Oseram runs that task and all of its dependencies.
+- `[task]`: optional task name. If provided, Oseram runs that task and all of its dependencies. If omitted, Oseram uses `global.default` when set, otherwise it infers the single final task.
 
 Flags:
 

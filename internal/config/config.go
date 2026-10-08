@@ -20,6 +20,7 @@ type Global struct {
 	WorkingDirectory string            `yaml:"workingDirectory"`
 	Environment      map[string]string `yaml:"environment"`
 	Verbose          bool              `yaml:"verbose"`
+	Default          string            `yaml:"default"`
 }
 
 type Task struct {
