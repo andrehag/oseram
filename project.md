@@ -9,6 +9,7 @@ The initial supported actions are:
 - `go`: compile Go code
 - `npm`: run an npm script
 - `zip`: create a zip archive
+- `copy`: copy files matching a doublestar pattern
 
 The implementation should make it straightforward to add more actions later without changing the scheduler or YAML loading logic.
 
@@ -143,6 +144,15 @@ npm run <task>    # if task is set
 
 If `install` is `true` and `task` is omitted, the action only runs `npm install`.
 
+### Copy Action
+
+Copies files matching a doublestar-style source pattern into a destination folder. Matching directories are ignored. Existing destination files are overwritten.
+
+Suggested fields:
+
+- `source`: doublestar-style glob pattern for files to copy
+- `destination`: destination folder
+
 ### Zip Action
 
 Creates a zip archive. The zip action always overwrites the output zip file if it already exists.
@@ -171,6 +181,7 @@ Suggested structure:
 │   └── runner.go
 ├── internal/actions
 │   ├── action.go
+│   ├── copy.go
 │   ├── go.go
 │   ├── npm.go
 │   └── zip.go

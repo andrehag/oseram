@@ -45,9 +45,10 @@ type Registry map[string]Action
 
 func Builtins() Registry {
 	return Registry{
-		"go":  Go{},
-		"npm": NPM{},
-		"zip": Zip{},
+		"copy": Copy{},
+		"go":   Go{},
+		"npm":  NPM{},
+		"zip":  Zip{},
 	}
 }
 

@@ -21,6 +21,7 @@ func main() {
 }
 
 func run() error {
+	flag.Usage = printHelp
 	file := flag.String("file", "build.yml", "build file to read")
 	dryRun := flag.Bool("dry-run", false, "print execution plan without running tasks")
 	list := flag.Bool("list", false, "list tasks")
@@ -86,4 +87,22 @@ func run() error {
 		fmt.Println(quotes.Format(quote))
 	}
 	return nil
+}
+
+func printHelp() {
+	fmt.Fprintf(flag.CommandLine.Output(), `Osseram - run build.yml tasks in dependency order.
+
+Usage:
+  osseram [flags] [task]
+
+Flags:
+  --file <path>  Build file to read (default: build.yml)
+  --dry-run      Print execution plan without running tasks
+  --list         List available tasks and exit
+  --verbose      Print captured stdout/stderr for successful tasks
+  --help         Show this help text
+
+Arguments:
+  task           Optional task to run with its dependencies
+`)
 }

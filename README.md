@@ -64,6 +64,7 @@ Flags:
 - `--dry-run`: print the execution plan without running tasks.
 - `--list`: list available tasks and exit.
 - `--verbose`: print captured stdout/stderr and execution details.
+- `--help`: show a short command line summary.
 
 Arguments:
 
