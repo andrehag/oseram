@@ -1,4 +1,4 @@
-module osseram
+module oseram
 
 go 1.24.0
 

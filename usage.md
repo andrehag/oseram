@@ -1,10 +1,10 @@
-# Osseram Usage
+# Oseram Usage
 
-Osseram reads a YAML build file and runs tasks in dependency order. Independent tasks run in parallel when their dependencies are complete.
+Oseram reads a YAML build file and runs tasks in dependency order. Independent tasks run in parallel when their dependencies are complete.
 
 ## Build File
 
-By default Osseram reads `build.yml` from the current directory. Use `--file` to choose another file.
+By default Oseram reads `build.yml` from the current directory. Use `--file` to choose another file.
 
 A build file contains tasks at the root level. The root key `global` is reserved for shared settings and is not a task.
 
@@ -79,9 +79,9 @@ package:
     output: dist/app.zip
 ```
 
-If no task is provided on the command line, Osseram runs the single final task: the task that no other task depends on. If there is more than one final task, Osseram exits with an error and asks for an explicit task.
+If no task is provided on the command line, Oseram runs the single final task: the task that no other task depends on. If there is more than one final task, Oseram exits with an error and asks for an explicit task.
 
-Every selected task always runs. Osseram does not skip tasks based on timestamps or existing outputs.
+Every selected task always runs. Oseram does not skip tasks based on timestamps or existing outputs.
 
 ## Actions
 
@@ -191,12 +191,12 @@ Matching directories are ignored.
 ## Command Line
 
 ```text
-osseram [flags] [task]
+oseram [flags] [task]
 ```
 
 Arguments:
 
-- `[task]`: optional task name. If provided, Osseram runs that task and all of its dependencies.
+- `[task]`: optional task name. If provided, Oseram runs that task and all of its dependencies.
 
 Flags:
 
@@ -210,31 +210,31 @@ Examples:
 
 ```sh
 # Run inferred final task from build.yml
-osseram
+oseram
 
 # Run a specific task and its dependencies
-osseram server
+oseram server
 
 # Use another build file
-osseram --file example/build.yml
+oseram --file example/build.yml
 
 # Preview execution order
-osseram --dry-run
+oseram --dry-run
 
 # List tasks
-osseram --list
+oseram --list
 
 # Show captured output while running
-osseram --verbose
+oseram --verbose
 ```
 
 ## Console Output
 
-During execution, Osseram shows a task list with status icons:
+During execution, Oseram shows a task list with status icons:
 
 - `○`: waiting
 - `▶`: running
 - `✓`: success
 - `✗`: failure
 
-On a successful non-dry-run build, Osseram prints a random quote after the results.
+On a successful non-dry-run build, Oseram prints a random quote after the results.

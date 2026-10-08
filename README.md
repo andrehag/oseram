@@ -1,17 +1,17 @@
-# Osseram
+# Oseram
 
-Osseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible. After a successful build, Osseram prints a random quote.
+Oseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible. After a successful build, Oseram prints a random quote.
 
 ## Build
 
 ```sh
-go build -o osseram ./cmd/osseram
+go build -o oseram ./cmd/oseram
 ```
 
 Or install into your Go bin directory:
 
 ```sh
-go install ./cmd/osseram
+go install ./cmd/oseram
 ```
 
 ## Run
@@ -19,43 +19,43 @@ go install ./cmd/osseram
 Run the single final/root task inferred from `build.yml`:
 
 ```sh
-./osseram
+./oseram
 ```
 
 Run a specific task and all of its dependencies:
 
 ```sh
-./osseram server
+./oseram server
 ```
 
 Use a build file at another path:
 
 ```sh
-./osseram --file example/build.yml
+./oseram --file example/build.yml
 ```
 
 Preview the execution plan without running tasks:
 
 ```sh
-./osseram --dry-run
+./oseram --dry-run
 ```
 
 List available tasks:
 
 ```sh
-./osseram --list
+./oseram --list
 ```
 
 Print captured stdout/stderr while tasks run:
 
 ```sh
-./osseram --verbose
+./oseram --verbose
 ```
 
 ## Command Line Parameters
 
 ```text
-osseram [flags] [task]
+oseram [flags] [task]
 ```
 
 Flags:
@@ -68,4 +68,4 @@ Flags:
 
 Arguments:
 
-- `[task]`: optional task name. If omitted, Osseram runs the single final task that no other task depends on. If multiple final tasks exist, Osseram fails and asks for an explicit task.
+- `[task]`: optional task name. If omitted, Oseram runs the single final task that no other task depends on. If multiple final tasks exist, Oseram fails and asks for an explicit task.

@@ -10,8 +10,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"osseram/internal/actions"
-	"osseram/internal/config"
+	"oseram/internal/actions"
+	"oseram/internal/config"
 )
 
 type Runner struct {

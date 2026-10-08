@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"osseram/internal/config"
+	"oseram/internal/config"
 )
 
 func Validate(tasks map[string]*config.Task) error {

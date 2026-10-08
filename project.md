@@ -1,8 +1,8 @@
-# Osseram Project Plan
+# Oseram Project Plan
 
 ## Overview
 
-Osseram is a small build tool written in Go. It reads a `build.yml` file and runs named tasks in dependency order. Tasks are declared at the root level of the YAML file and may depend on each other using `dependsOn`.
+Oseram is a small build tool written in Go. It reads a `build.yml` file and runs named tasks in dependency order. Tasks are declared at the root level of the YAML file and may depend on each other using `dependsOn`.
 
 The initial supported actions are:
 
@@ -81,7 +81,7 @@ frontend:
     - merge global and task-level working directory settings
     - merge global and task-level environment variables
     - invoke the selected action handler
-11. Every selected task always runs; Osseram does not skip tasks based on timestamps or existing outputs.
+11. Every selected task always runs; Oseram does not skip tasks based on timestamps or existing outputs.
 12. Stop scheduling new tasks after the first failure and return a non-zero exit code. Already-running parallel tasks may finish before shutdown completes.
 
 ## Proposed CLI
@@ -89,7 +89,7 @@ frontend:
 Initial command:
 
 ```sh
-osseram [task]
+oseram [task]
 ```
 
 Behavior:
@@ -172,7 +172,7 @@ Suggested structure:
 
 ```text
 .
-├── cmd/osseram/main.go
+├── cmd/oseram/main.go
 ├── internal/config
 │   └── config.go
 ├── internal/graph
@@ -253,7 +253,7 @@ Responsibilities:
 ### Phase 1: Project Skeleton
 
 - Initialize a Go module.
-- Create the CLI entry point at `cmd/osseram/main.go`.
+- Create the CLI entry point at `cmd/oseram/main.go`.
 - Add YAML parsing dependency, likely `gopkg.in/yaml.v3`.
 - Define core config structs and action interface.
 

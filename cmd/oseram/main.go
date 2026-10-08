@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"os"
 
-	"osseram/internal/actions"
-	"osseram/internal/config"
-	"osseram/internal/graph"
-	"osseram/internal/quotes"
-	"osseram/internal/runner"
+	"oseram/internal/actions"
+	"oseram/internal/config"
+	"oseram/internal/graph"
+	"oseram/internal/quotes"
+	"oseram/internal/runner"
 )
 
 func main() {
@@ -90,10 +90,10 @@ func run() error {
 }
 
 func printHelp() {
-	fmt.Fprintf(flag.CommandLine.Output(), `Osseram - run build.yml tasks in dependency order.
+	fmt.Fprintf(flag.CommandLine.Output(), `Oseram - run build.yml tasks in dependency order.
 
 Usage:
-  osseram [flags] [task]
+  oseram [flags] [task]
 
 Flags:
   --file <path>  Build file to read (default: build.yml)
