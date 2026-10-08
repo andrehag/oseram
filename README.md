@@ -1,6 +1,6 @@
 # Osseram
 
-Osseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible.
+Osseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible. After a successful build, Osseram prints a random quote.
 
 ## Build
 

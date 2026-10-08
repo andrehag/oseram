@@ -9,6 +9,7 @@ import (
 	"osseram/internal/actions"
 	"osseram/internal/config"
 	"osseram/internal/graph"
+	"osseram/internal/quotes"
 	"osseram/internal/runner"
 )
 
@@ -74,5 +75,15 @@ func run() error {
 		return err
 	}
 	r := runner.Runner{Config: cfg, Actions: registry, Verbose: *verbose, DryRun: *dryRun}
-	return r.Run(context.Background(), order)
+	if err := r.Run(context.Background(), order); err != nil {
+		return err
+	}
+	if !*dryRun {
+		quote, err := quotes.Random()
+		if err != nil {
+			return err
+		}
+		fmt.Println(quotes.Format(quote))
+	}
+	return nil
 }
