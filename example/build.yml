@@ -1,0 +1,16 @@
+global:
+    workingDirectory: ./
+
+server:
+    dependsOn: frontend
+    environment:
+        GOOS: linux
+        CGO_ENABLED: "0"
+    go:
+        entry: .
+        output: dist/server
+
+frontend:
+    workingDirectory: ./frontend
+    npm:
+        task: build
