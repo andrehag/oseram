@@ -6,7 +6,7 @@ Oseram is a small Go build tool that reads `build.yml` and runs tasks in depende
 Install easily with go install:
 
 ```
-go install github.com/andrehag/oseram/cmd/oseram
+go install github.com/andrehag/oseram/cmd/oseram@latest
 ```
 
 ## Build
