@@ -12,21 +12,22 @@ import (
 type NPM struct{}
 
 type npmConfig struct {
-	Task string `yaml:"task"`
+	Task    string `yaml:"task"`
+	Install bool   `yaml:"install"`
 }
 
 func (NPM) Name() string { return "npm" }
 
 func (NPM) Validate(raw yaml.Node) error {
-	if err := validateAllowedKeys(raw, "npm", map[string]bool{"task": true}); err != nil {
+	if err := validateAllowedKeys(raw, "npm", map[string]bool{"task": true, "install": true}); err != nil {
 		return err
 	}
 	var cfg npmConfig
 	if err := raw.Decode(&cfg); err != nil {
 		return err
 	}
-	if cfg.Task == "" {
-		return fmt.Errorf("npm.task is required")
+	if cfg.Task == "" && !cfg.Install {
+		return fmt.Errorf("npm.task is required unless npm.install is true")
 	}
 	return nil
 }
@@ -36,12 +37,24 @@ func (NPM) Run(ctx context.Context, task TaskContext, raw yaml.Node) (Output, er
 	if err := raw.Decode(&cfg); err != nil {
 		return Output{}, err
 	}
-	cmd := exec.CommandContext(ctx, "npm", "run", cfg.Task)
+	var stdout, stderr bytes.Buffer
+	if cfg.Install {
+		if err := runNPMCommand(ctx, task, &stdout, &stderr, "install"); err != nil {
+			return Output{Stdout: stdout.String(), Stderr: stderr.String()}, err
+		}
+	}
+	if cfg.Task == "" {
+		return Output{Stdout: stdout.String(), Stderr: stderr.String()}, nil
+	}
+	err := runNPMCommand(ctx, task, &stdout, &stderr, "run", cfg.Task)
+	return Output{Stdout: stdout.String(), Stderr: stderr.String()}, err
+}
+
+func runNPMCommand(ctx context.Context, task TaskContext, stdout, stderr *bytes.Buffer, args ...string) error {
+	cmd := exec.CommandContext(ctx, "npm", args...)
 	cmd.Dir = task.WorkDir
 	cmd.Env = task.Env
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	return Output{Stdout: stdout.String(), Stderr: stderr.String()}, err
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+	return cmd.Run()
 }

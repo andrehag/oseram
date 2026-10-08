@@ -127,17 +127,21 @@ go build -o <output> <entry>
 
 ### NPM Action
 
-Runs an npm script.
+Runs npm commands.
 
 Suggested fields:
 
-- `task`: npm script name
+- `install`: optional boolean. When `true`, run `npm install` before any npm script.
+- `task`: optional npm script name. Required unless `install` is `true`.
 
 Command shape:
 
 ```sh
-npm run <task>
+npm install        # if install is true
+npm run <task>    # if task is set
 ```
+
+If `install` is `true` and `task` is omitted, the action only runs `npm install`.
 
 ### Zip Action
 
