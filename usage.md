@@ -2,6 +2,32 @@
 
 Oseram reads a YAML build file and runs tasks in dependency order. Independent tasks run in parallel when their dependencies are complete.
 
+## Initializing a Build File
+
+Use `oseram-init` to create a suggested `build.yml` for the current folder:
+
+```sh
+oseram-init
+```
+
+Scan another directory and write `build.yml` there:
+
+```sh
+oseram-init --working-directory path/to/project
+```
+
+`oseram-init` flags:
+
+- `--working-directory <path>`: directory to scan and write `build.yml` into. Defaults to `.`.
+- `--help`: show a short command line summary.
+
+It scans for:
+
+- Go entry points: `.go` files in package `main` with a `main` function.
+- `package.json` files. If a `build` script exists, it suggests `npm install` followed by `npm run build`; otherwise it suggests `npm install` only.
+
+Generated output paths default to the `dist/` folder. If `build.yml` already exists, `oseram-init` prints a message and leaves it unchanged.
+
 ## Build File
 
 By default Oseram reads `build.yml` from the current directory. Use `--file` to choose another file.
