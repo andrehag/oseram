@@ -1,6 +1,7 @@
 # Oseram
 
 Oseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible.
+[See usage-instructions](usage.md) for how to create a build-file.
 
 ## Install
 Install easily with go install:
