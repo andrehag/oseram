@@ -86,7 +86,7 @@ func run() error {
 	if err := r.Run(context.Background(), order); err != nil {
 		return err
 	}
-	if !*dryRun {
+	if !*dryRun && !cfg.Global.NoQuote {
 		quote, err := quotes.Random()
 		if err != nil {
 			return err

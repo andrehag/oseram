@@ -41,6 +41,7 @@ global:
     CGO_ENABLED: "0"
   verbose: false
   default: server
+  noquote: false
 
 frontend:
   workingDirectory: ./frontend
@@ -67,6 +68,7 @@ global:
   environment:
     KEY: value
   verbose: false
+  noquote: false
 ```
 
 Parameters:
@@ -75,6 +77,7 @@ Parameters:
 - `environment`: environment variables applied to every task.
 - `verbose`: when `true`, prints captured stdout/stderr for successful tasks too.
 - `default`: optional task to run when no task argument is provided.
+- `noquote`: when `true`, disables the random quote printed after a successful build.
 
 Task-level settings override global settings.
 
@@ -295,4 +298,3 @@ During execution, Oseram shows a task list with status icons:
 - `✓`: success
 - `✗`: failure
 
-On a successful non-dry-run build, Oseram prints a random quote after the results.

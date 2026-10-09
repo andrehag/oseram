@@ -21,6 +21,7 @@ type Global struct {
 	Environment      map[string]string `yaml:"environment"`
 	Verbose          bool              `yaml:"verbose"`
 	Default          string            `yaml:"default"`
+	NoQuote          bool              `yaml:"noquote"`
 }
 
 type Task struct {
