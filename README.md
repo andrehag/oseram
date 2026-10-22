@@ -8,21 +8,18 @@ Install easily with go install:
 
 ```
 go install github.com/andrehag/oseram/cmd/oseram@latest
-go install github.com/andrehag/oseram/cmd/oseram-init@latest
 ```
 
 ## Build
 
 ```sh
 go build -o oseram ./cmd/oseram
-go build -o oseram-init ./cmd/oseram-init
 ```
 
 Or install into your Go bin directory:
 
 ```sh
 go install ./cmd/oseram
-go install ./cmd/oseram-init
 ```
 
 ## Initialize a Build File
@@ -30,16 +27,16 @@ go install ./cmd/oseram-init
 Create a suggested `build.yml` by scanning the current folder for Go entry points and `package.json` files:
 
 ```sh
-./oseram-init
+./oseram init
 ```
 
 Scan another directory:
 
 ```sh
-./oseram-init --working-directory path/to/project
+./oseram init --working-directory path/to/project
 ```
 
-If `build.yml` already exists in the working directory, `oseram-init` exits with a message and leaves it unchanged. Suggested outputs are placed under `dist/`.
+If `build.yml` already exists in the working directory, `oseram init` exits with a message and leaves it unchanged. Suggested outputs are placed under `dist/`.
 
 ## Run
 
@@ -89,9 +86,10 @@ Print captured stdout/stderr while tasks run:
 
 ```text
 oseram [flags] [task]
+oseram init [flags]
 ```
 
-`oseram-init` flags:
+`oseram init` flags:
 
 - `--working-directory <path>`: directory to scan and write `build.yml` into. Defaults to `.`.
 - `--help`: show a short command line summary.

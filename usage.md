@@ -4,19 +4,19 @@ Oseram reads a YAML build file and runs tasks in dependency order. Independent t
 
 ## Initializing a Build File
 
-Use `oseram-init` to create a suggested `build.yml` for the current folder:
+Use `oseram init` to create a suggested `build.yml` for the current folder:
 
 ```sh
-oseram-init
+oseram init
 ```
 
 Scan another directory and write `build.yml` there:
 
 ```sh
-oseram-init --working-directory path/to/project
+oseram init --working-directory path/to/project
 ```
 
-`oseram-init` flags:
+`oseram init` flags:
 
 - `--working-directory <path>`: directory to scan and write `build.yml` into. Defaults to `.`.
 - `--help`: show a short command line summary.
@@ -26,7 +26,7 @@ It scans for:
 - Go entry points: `.go` files in package `main` with a `main` function.
 - `package.json` files. If a `build` script exists, it suggests `npm install` followed by `npm run build`; otherwise it suggests `npm install` only.
 
-Generated output paths default to the `dist/` folder. If `build.yml` already exists, `oseram-init` prints a message and leaves it unchanged.
+Generated output paths default to the `dist/` folder. If `build.yml` already exists, `oseram init` prints a message and leaves it unchanged.
 
 ## Build File
 
@@ -253,6 +253,7 @@ Matching directories are ignored.
 
 ```text
 oseram [flags] [task...]
+oseram init [flags]
 ```
 
 Arguments:
@@ -265,6 +266,11 @@ Flags:
 - `--dry-run`: print the execution plan without running tasks.
 - `--list`: list available tasks and exit.
 - `--verbose`: print captured stdout/stderr for successful tasks.
+- `--help`: show a short command line summary.
+
+`oseram init` flags:
+
+- `--working-directory <path>`: directory to scan and write `build.yml` into. Defaults to `.`.
 - `--help`: show a short command line summary.
 
 Examples:
