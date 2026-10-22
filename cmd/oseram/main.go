@@ -22,6 +22,9 @@ func main() {
 
 func run() error {
 	flag.Usage = printHelp
+	if len(os.Args) > 1 && os.Args[1] == "init" {
+		return runInit(os.Args[2:])
+	}
 	file := flag.String("file", "build.yml", "build file to read")
 	dryRun := flag.Bool("dry-run", false, "print execution plan without running tasks")
 	list := flag.Bool("list", false, "list tasks")
@@ -98,6 +101,10 @@ func printHelp() {
 
 Usage:
   oseram [flags] [task]
+       oseram init [flags]
+
+Subcommands:
+  init            Create a suggested build.yml for the current folder
 
 Flags:
   --file <path>  Build file to read (default: build.yml)
