@@ -68,6 +68,27 @@ func Closure(tasks map[string]*config.Task, target string) ([]string, error) {
 	return selected, nil
 }
 
+// Select returns the sorted union of the dependency closures of the given
+// targets, deduplicating shared dependencies. Each target must exist.
+func Select(tasks map[string]*config.Task, targets []string) ([]string, error) {
+	selected := map[string]bool{}
+	for _, target := range targets {
+		closure, err := Closure(tasks, target)
+		if err != nil {
+			return nil, err
+		}
+		for _, name := range closure {
+			selected[name] = true
+		}
+	}
+	names := make([]string, 0, len(selected))
+	for name := range selected {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names, nil
+}
+
 func Order(tasks map[string]*config.Task, selected []string) ([]string, error) {
 	selectedSet := map[string]bool{}
 	for _, name := range selected {
