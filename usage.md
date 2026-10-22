@@ -252,12 +252,12 @@ Matching directories are ignored.
 ## Command Line
 
 ```text
-oseram [flags] [task]
+oseram [flags] [task...]
 ```
 
 Arguments:
 
-- `[task]`: optional task name. If provided, Oseram runs that task and all of its dependencies. If omitted, Oseram uses `global.default` when set, otherwise it infers the single final task.
+- `[task...]`: optional task names. If provided, Oseram runs those tasks and all of their dependencies. If omitted, Oseram uses `global.default` when set, otherwise it infers the single final task. Multiple tasks are run together; independent targets run in parallel.
 
 Flags:
 
@@ -275,6 +275,9 @@ oseram
 
 # Run a specific task and its dependencies
 oseram server
+
+# Run several tasks; independent targets run in parallel
+oseram lint server
 
 # Use another build file
 oseram --file example/build.yml

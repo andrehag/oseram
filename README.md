@@ -55,6 +55,12 @@ Run a specific task and all of its dependencies:
 ./oseram server
 ```
 
+Run several tasks in one invocation. Independent targets run in parallel:
+
+```sh
+./oseram lint server
+```
+
 Use a build file at another path:
 
 ```sh
@@ -100,4 +106,4 @@ oseram [flags] [task]
 
 Arguments:
 
-- `[task]`: optional task name. If omitted, Oseram runs `global.default` when set; otherwise it runs the single final task that no other task depends on. If multiple final tasks exist and no default is set, Oseram fails and asks for an explicit task.
+- `[task...]`: optional task names. If omitted, Oseram runs `global.default` when set; otherwise it runs the single final task that no other task depends on. If multiple final tasks exist and no default is set, Oseram fails and asks for an explicit task. Multiple tasks are run with their combined dependencies; independent targets run in parallel.

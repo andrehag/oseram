@@ -55,14 +55,11 @@ func run() error {
 		return nil
 	}
 
-	var target string
-	if flag.NArg() > 1 {
-		return fmt.Errorf("expected zero or one task argument")
-	}
-	if flag.NArg() == 1 {
-		target = flag.Arg(0)
+	var targets []string
+	if flag.NArg() > 0 {
+		targets = flag.Args()
 	} else if cfg.Global.Default != "" {
-		target = cfg.Global.Default
+		targets = []string{cfg.Global.Default}
 	} else {
 		finals := graph.FinalTasks(cfg.Tasks)
 		if len(finals) == 0 {
@@ -71,10 +68,10 @@ func run() error {
 		if len(finals) > 1 {
 			return fmt.Errorf("multiple root/final tasks found (%v); specify a task or set global.default", finals)
 		}
-		target = finals[0]
+		targets = []string{finals[0]}
 	}
 
-	selected, err := graph.Closure(cfg.Tasks, target)
+	selected, err := graph.Select(cfg.Tasks, targets)
 	if err != nil {
 		return err
 	}
@@ -110,8 +107,8 @@ Flags:
   --help         Show this help text
 
 Arguments:
-  task           Optional task to run with its dependencies. If omitted,
+  task           One or more tasks to run with their dependencies. If omitted,
                  global.default is used when set; otherwise the single final
-                 task is inferred.
+                 task is inferred. Multiple independent targets run in parallel.
 `)
 }
