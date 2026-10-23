@@ -23,8 +23,8 @@ oseram init --working-directory path/to/project
 
 It scans for:
 
-- Go entry points: `.go` files in package `main` with a `main` function.
-- `package.json` files. If a `build` script exists, it suggests `npm install` followed by `npm run build`; otherwise it suggests `npm install` only.
+- Go entry points: `.go` files in package `main` with a `main` function. If such a package contains `_test.go` files, a matching `go-<name>-test` task is suggested too.
+- `package.json` files. If a `build` script exists, it suggests `npm install` followed by `npm run build`; otherwise it suggests `npm install` only. If a `test` script exists, a matching `npm-<name>-test` task is suggested.
 
 Generated output paths default to the `dist/` folder. If `build.yml` already exists, `oseram init` prints a message and leaves it unchanged.
 
@@ -118,7 +118,7 @@ Every selected task always runs. Oseram does not skip tasks based on timestamps 
 
 ### `go`
 
-Builds Go code using `go build`.
+Builds Go code using `go build`, or runs tests using `go test`.
 
 ```yaml
 server:
@@ -127,20 +127,47 @@ server:
     output: dist/server
 ```
 
-Parameters:
+Build parameters:
 
-- `entry`: required. Go package or path to build.
-- `output`: required. Output binary path.
+- `entry`: Go package or path to build. Required unless `test` is set.
+- `output`: output binary path. Required unless `test` is set.
 
-Command run:
+Test parameters:
+
+- `test`: optional. Either `true` to run `go test ./...` in the task working directory, or a package pattern such as `./internal/...`.
+- `args`: optional list of extra arguments passed to the Go command (build or test), for example `["-v", "-count=1"]`.
+
+Commands run:
 
 ```sh
-go build -o <output> <entry>
+go build -o <output> <entry>   # when test is not set
+ go test <args> <pattern>       # when test is set
+```
+
+Examples:
+
+```yaml
+# Build a binary
+server:
+  go:
+    entry: .
+    output: dist/server
+
+# Run all tests in the module
+check:
+  go:
+    test: true
+
+# Run tests for one package with verbose output
+checkInternal:
+  go:
+    test: ./internal/...
+    args: ["-v"]
 ```
 
 ### `npm`
 
-Runs npm commands.
+Runs npm commands: install, a script, and/or the test script.
 
 ```yaml
 frontend:
@@ -152,8 +179,9 @@ frontend:
 
 Parameters:
 
-- `install`: optional boolean. If `true`, runs `npm install` before running a task.
-- `task`: optional npm script name. Required unless `install` is `true`.
+- `install`: optional boolean. If `true`, runs `npm install` before running a task or test.
+- `task`: optional npm script name. Runs `npm run <task>`. Required unless `install` is `true` or `test` is set.
+- `test`: optional. Either `true` to run `npm test`, or a script name to run via `npm run <name>`.
 
 Examples:
 
@@ -168,13 +196,26 @@ frontend:
 installFrontend:
   npm:
     install: true
+
+# Run tests (npm test) after installing
+checkFrontend:
+  npm:
+    install: true
+    test: true
+
+# Run a custom script instead of the default test script
+checkFrontend:
+  npm:
+    test: check
 ```
 
 Commands run:
 
 ```sh
 npm install        # if install is true
-npm run <task>    # if task is set
+npm test           # if test is true
+npm run <name>     # if test is a script name
+npm run <task>     # if task is set
 ```
 
 ### `delete`

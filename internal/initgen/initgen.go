@@ -28,6 +28,7 @@ type packageJSON struct {
 type taskSuggestion struct {
 	Name string
 	Body map[string]any
+	Test bool
 }
 
 // Run scans dir for Go entry points and package.json files and writes a
@@ -71,8 +72,8 @@ func Run(dir string) (string, error) {
 			"workingDirectory": "./",
 		},
 	}
-	if len(tasks) == 1 {
-		root["global"].(map[string]any)["default"] = tasks[0].Name
+	if def := defaultTask(tasks); def != "" {
+		root["global"].(map[string]any)["default"] = def
 	}
 	for _, task := range tasks {
 		root[task.Name] = task.Body
@@ -89,9 +90,13 @@ func Run(dir string) (string, error) {
 }
 
 func findGoTasks(root string) ([]taskSuggestion, error) {
+	testDirs, err := findTestDirs(root)
+	if err != nil {
+		return nil, err
+	}
 	var tasks []taskSuggestion
 	seenDirs := map[string]bool{}
-	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+	err = filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -133,6 +138,13 @@ func findGoTasks(root string) ([]taskSuggestion, error) {
 				},
 			},
 		})
+		if testDirs[dir] {
+			tasks = append(tasks, taskSuggestion{
+				Name: uniqueTaskName(taskName+"-test", existingNames(tasks)),
+				Body: map[string]any{"go": map[string]any{"test": true}},
+				Test: true,
+			})
+		}
 		return nil
 	})
 	return tasks, err
@@ -177,9 +189,62 @@ func findNPMTasks(root string) ([]taskSuggestion, error) {
 		}
 		taskName := uniqueTaskName("npm-"+namePart, existingNames(tasks))
 		tasks = append(tasks, taskSuggestion{Name: taskName, Body: body})
+		if _, ok := pkg.Scripts["test"]; ok {
+			testBody := map[string]any{"npm": map[string]any{"install": true, "test": true}}
+			if relDir != "." {
+				testBody["workingDirectory"] = "./" + relDir
+			}
+			tasks = append(tasks, taskSuggestion{
+				Name: uniqueTaskName(taskName+"-test", existingNames(tasks)),
+				Body: testBody,
+				Test: true,
+			})
+		}
 		return nil
 	})
 	return tasks, err
+}
+
+// findTestDirs walks root and records directories that contain at least one
+// Go test file (file name ends in _test.go). It respects the same skip rules
+// as the main Go scan.
+func findTestDirs(root string) (map[string]bool, error) {
+	testDirs := map[string]bool{}
+	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			if shouldSkipDir(path, root) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if strings.HasSuffix(path, "_test.go") {
+			testDirs[filepath.Dir(path)] = true
+		}
+		return nil
+	})
+	return testDirs, err
+}
+
+// defaultTask picks the task to set as global.default: the single non-test
+// task when present, otherwise the single task when there is exactly one.
+// Returns "" when there is no unambiguous default.
+func defaultTask(tasks []taskSuggestion) string {
+	var builds []string
+	for _, t := range tasks {
+		if !t.Test {
+			builds = append(builds, t.Name)
+		}
+	}
+	if len(builds) == 1 {
+		return builds[0]
+	}
+	if len(tasks) == 1 {
+		return tasks[0].Name
+	}
+	return ""
 }
 
 func isMainPackageWithMainFunc(path string) (bool, error) {

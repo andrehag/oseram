@@ -86,6 +86,56 @@ func TestRunLeavesExistingBuildFile(t *testing.T) {
 	}
 }
 
+func TestRunSuggestsGoAndNPMTestTasks(t *testing.T) {
+	root := writeTree(t, map[string]string{
+		"main.go":          "package main\nfunc main() {}\n",
+		"main_test.go":     "package main\nfunc TestX(t *testing.T) {}\n",
+		"web/package.json": `{"scripts":{"build":"vite build","test":"vitest run"}}`,
+	})
+	if _, err := Run(root); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	build := readBuild(t, root)
+	name := "go-" + strings.ToLower(filepath.Base(root))
+	for _, want := range []string{
+		name + "-test:",
+		"test: true",
+		"npm-web-test:",
+	} {
+		if !strings.Contains(build, want) {
+			t.Errorf("build.yml missing %q:\n%s", want, build)
+		}
+	}
+}
+
+func TestRunDoesNotSuggestNPMTestWithoutTestScript(t *testing.T) {
+	root := writeTree(t, map[string]string{
+		"web/package.json": `{"scripts":{"build":"vite build"}}`,
+	})
+	if _, err := Run(root); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	build := readBuild(t, root)
+	if strings.Contains(build, "-test:") {
+		t.Errorf("expected no test task when package.json has no test script:\n%s", build)
+	}
+}
+
+func TestRunDefaultPrefersBuildTaskWhenTestTaskExists(t *testing.T) {
+	root := writeTree(t, map[string]string{
+		"main.go":      "package main\nfunc main() {}\n",
+		"main_test.go": "package main\nfunc TestX(t *testing.T) {}\n",
+	})
+	if _, err := Run(root); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	build := readBuild(t, root)
+	name := "go-" + strings.ToLower(filepath.Base(root))
+	if !strings.Contains(build, "default: "+name) {
+		t.Errorf("default should be the build task %q, got:\n%s", name, build)
+	}
+}
+
 func TestRunNoTasks(t *testing.T) {
 	root := writeTree(t, map[string]string{
 		"notes.txt": "nothing here\n",
