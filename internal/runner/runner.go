@@ -20,6 +20,9 @@ type Runner struct {
 	Actions actions.Registry
 	Verbose bool
 	DryRun  bool
+	// NonInteractive selects the plain, line-oriented runner used for
+	// non-interactive terminals (CI, scripts, redirected output).
+	NonInteractive bool
 }
 
 type taskStatus int
@@ -58,9 +61,13 @@ func (r Runner) Run(ctx context.Context, selected []string) error {
 	if r.DryRun {
 		fmt.Println("execution plan:")
 		for _, name := range selected {
-			fmt.Printf("- %s %s\n", name, r.taskActionLabel(name))
+			fmt.Printf("- %s %s\n", name, r.plainTaskLine(name))
 		}
 		return nil
+	}
+
+	if r.NonInteractive {
+		return r.runNonInteractive(ctx, selected)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -222,6 +229,16 @@ func (r Runner) taskActionLabel(name string) string {
 	task := r.Config.Tasks[name]
 	if task.ActionName == "delete" && deleteIsForced(task.Action) {
 		return "(" + task.ActionName + " " + forceStyle.Render("FORCE") + ")"
+	}
+	return "(" + task.ActionName + ")"
+}
+
+// plainTaskLine renders a task's action for plain text output that must not
+// rely on lipgloss styling (dry-run, non-interactive mode).
+func (r Runner) plainTaskLine(name string) string {
+	task := r.Config.Tasks[name]
+	if task.ActionName == "delete" && deleteIsForced(task.Action) {
+		return "(" + task.ActionName + " FORCE)"
 	}
 	return "(" + task.ActionName + ")"
 }

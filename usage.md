@@ -307,7 +307,10 @@ Flags:
 - `--dry-run`: print the execution plan without running tasks.
 - `--list`: list available tasks and exit.
 - `--verbose`: print captured stdout/stderr for successful tasks.
+- `--non-interactive`: use simplified line output instead of the interactive terminal UI.
 - `--help`: show a short command line summary.
+
+When stdout is not a terminal (for example in a CI job, a script, or when output is piped), Oseram automatically switches to the simplified non-interactive output, so no flag is needed in most automated environments. Use `--non-interactive` to force it even when attached to a terminal.
 
 `oseram init` flags:
 
@@ -337,14 +340,19 @@ oseram --list
 
 # Show captured output while running
 oseram --verbose
+
+# Force simplified line output, even in a terminal (useful for scripts and logs)
+oseram --non-interactive
 ```
 
 ## Console Output
 
-During execution, Oseram shows a task list with status icons:
+When attached to a terminal, Oseram shows an interactive task list with status icons:
 
 - `○`: waiting
 - `▶`: running
 - `✓`: success
 - `✗`: failure
+
+In non-interactive mode (automatically detected when stdout is not a terminal, or forced with `--non-interactive`), Oseram prints one plain line per task as it completes, using `[ok]`/`[FAIL]`. With `--verbose` it also prints captured stdout/stderr under `[<task> stdout]` / `[<task> stderr]` headers. No colors, status redraws, or decorative quote are produced.
 

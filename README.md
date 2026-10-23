@@ -82,6 +82,14 @@ Print captured stdout/stderr while tasks run:
 ./oseram --verbose
 ```
 
+Use simplified, log-friendly output for automated builds, scripts, or piped output:
+
+```sh
+./oseram --non-interactive
+```
+
+Oseram detects when stdout is not a terminal (for example in CI or when output is piped) and switches to the simplified output automatically.
+
 ## Command Line Parameters
 
 ```text
@@ -100,6 +108,7 @@ oseram init [flags]
 - `--dry-run`: print the execution plan without running tasks.
 - `--list`: list available tasks and exit.
 - `--verbose`: print captured stdout/stderr and execution details.
+- `--non-interactive`: use simplified line output instead of the interactive TUI. Automatically enabled when stdout is not a terminal.
 - `--help`: show a short command line summary.
 
 Arguments:
