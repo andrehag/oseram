@@ -29,6 +29,7 @@ func run() error {
 	dryRun := flag.Bool("dry-run", false, "print execution plan without running tasks")
 	list := flag.Bool("list", false, "list tasks")
 	verbose := flag.Bool("verbose", false, "print captured stdout/stderr")
+	nonInteractive := flag.Bool("non-interactive", false, "simplified output for non-interactive terminals")
 	flag.Parse()
 
 	registry := actions.Builtins()
@@ -82,11 +83,11 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	r := runner.Runner{Config: cfg, Actions: registry, Verbose: *verbose, DryRun: *dryRun}
+	r := runner.Runner{Config: cfg, Actions: registry, Verbose: *verbose, DryRun: *dryRun, NonInteractive: *nonInteractive || !termIsInteractive(os.Stdout)}
 	if err := r.Run(context.Background(), order); err != nil {
 		return err
 	}
-	if !*dryRun && !cfg.Global.NoQuote {
+	if !*dryRun && !cfg.Global.NoQuote && !r.NonInteractive {
 		quote, err := quotes.Random()
 		if err != nil {
 			return err
@@ -94,6 +95,18 @@ func run() error {
 		fmt.Println(quotes.Format(quote))
 	}
 	return nil
+}
+
+// termIsInteractive reports whether the given file is a terminal. When stdout
+// is not a terminal (for example when oseram runs as part of an automated
+// build or its output is piped), Oseram automatically switches to simplified,
+// non-interactive output.
+func termIsInteractive(f *os.File) bool {
+	fi, err := f.Stat()
+	if err != nil {
+		return false
+	}
+	return fi.Mode()&os.ModeCharDevice != 0
 }
 
 func printHelp() {
@@ -111,6 +124,8 @@ Flags:
   --dry-run      Print execution plan without running tasks
   --list         List available tasks and exit
   --verbose      Print captured stdout/stderr for successful tasks
+  --non-interactive
+                 Use simplified line output instead of the interactive TUI
   --help         Show this help text
 
 Arguments:
