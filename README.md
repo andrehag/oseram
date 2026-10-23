@@ -1,6 +1,6 @@
 # Oseram
 
-Oseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible.
+Oseram is a small Go build tool that reads `build.yml` and runs tasks in dependency order. Independent tasks are run in parallel when possible. Tasks can build Go code, and install or run `npm` scripts, including running tests for both.
 [See usage-instructions](usage.md) for how to create a build-file.
 
 ## Install
@@ -36,7 +36,7 @@ Scan another directory:
 ./oseram init --working-directory path/to/project
 ```
 
-If `build.yml` already exists in the working directory, `oseram init` exits with a message and leaves it unchanged. Suggested outputs are placed under `dist/`.
+If `build.yml` already exists in the working directory, `oseram init` exits with a message and leaves it unchanged. Suggested outputs are placed under `dist/`. Suggested test tasks are added for Go packages that contain `_test.go` files and for `package.json` files that define a `test` script.
 
 ## Run
 
